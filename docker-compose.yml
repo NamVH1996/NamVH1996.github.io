@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  alert-management-fe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    restart: unless-stopped
+    networks:
+      - alert-network
+
+  # Uncomment if you want to run development mode
+  # alert-management-dev:
+  #   image: node:20-alpine
+  #   working_dir: /app
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #   ports:
+  #     - "3000:3000"
+  #   command: npm run dev
+  #   environment:
+  #     - VITE_API_URL=http://localhost:8080
+  #   networks:
+  #     - alert-network
+
+networks:
+  alert-network:
+    driver: bridge
