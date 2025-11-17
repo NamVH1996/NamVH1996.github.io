@@ -1,0 +1,46 @@
+# Binaries
+bin/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Build artifacts
+tmp/
+*.o
+*.a
+*.test
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+
+# Go
+vendor/
+go.sum
+*.out
+
+# Logs
+*.log
+logs/
+
+# Testing
+coverage.out
+coverage.html
+.nyc_output/
+
+# Dependencies cache
+.cache/
