@@ -15,6 +15,7 @@ services:
       - '--storage.path=/alertmanager'
     networks:
       - grafana-network
+    restart: unless-stopped
 
   # Grafana Alert Plugin Backend
   plugin-backend:
@@ -36,25 +37,8 @@ services:
       - grafana-network
     restart: unless-stopped
 
-  # Prometheus for metrics (optional)
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-storage:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-    networks:
-      - grafana-network
-    restart: unless-stopped
-
 volumes:
   alertmanager-storage:
-  prometheus-storage:
 
 networks:
   grafana-network:

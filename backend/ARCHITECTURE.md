@@ -23,25 +23,19 @@
 │  └──────────────────┬───────────────────────────────────────┘  │
 └─────────────────────┼──────────────────────────────────────────┘
                       │ HTTP/REST
-      ┌───────────────▼──────────────┐
-      │      ALERTMANAGER API        │
-      │  http://alertmanager:9093    │
-      │  - Fetch active alerts       │
-      │  - Alert lifecycle events    │
-      │  - Notification routing      │
-      └───────────────┬──────────────┘
-                      │
-        ┌─────────────┴─────────────┐
-        │                           │
-   ┌────▼──────┐           ┌────────▼────┐
-   │PROMETHEUS │           │NOTIFICATION │
-   │(Metrics)  │           │ CHANNELS     │
-   │           │           │              │
-   │- Scrape   │           │- Slack       │
-   │- Rules    │           │- Email       │
-   │- Alerts   │           │- PagerDuty   │
-   └───────────┘           │- Webhook     │
-                           └──────────────┘
+      ┌───────────────▼──────────────────────┐
+      │      ALERTMANAGER                    │
+      │  (Separate Service)                  │
+      │  http://alertmanager:9093            │
+      │  - Fetch active alerts               │
+      │  - Alert lifecycle events            │
+      │  - Notification routing              │
+      │                                      │
+      │  Connected to:                       │
+      │  - Prometheus (for metrics)          │
+      │  - Notification channels             │
+      │    (Slack, Email, etc.)              │
+      └──────────────────────────────────────┘
 ```
 
 ## Component Details

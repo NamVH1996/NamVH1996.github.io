@@ -102,9 +102,7 @@ Grafana UI (React)
     ↓ HTTP REST API
 Backend Server (Go)
     ↓ AlertManager API
-AlertManager
-    ↓
-Prometheus
+AlertManager (Separate Service)
 ```
 
 See [backend/ARCHITECTURE.md](./backend/ARCHITECTURE.md) for detailed architecture documentation.
@@ -184,9 +182,8 @@ docker-compose up -d
 ```
 
 This starts:
-- AlertManager on port 9093
-- Plugin Backend on port 8080
-- Prometheus on port 9090
+- **AlertManager** on port 9093 (for alert management)
+- **Plugin Backend** on port 8080 (REST API server)
 
 ## 🚨 Troubleshooting
 

@@ -54,6 +54,7 @@ make run
 
 ```bash
 # Build and run with Docker Compose
+# Starts: AlertManager (9093) + Plugin Backend (8080)
 docker-compose up -d
 
 # View logs
