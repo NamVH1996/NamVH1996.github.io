@@ -1,0 +1,127 @@
+.alerts-panel {
+  background-color: white;
+  border-radius: 4px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.alerts-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.alerts-panel__header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.alerts-panel__count {
+  margin: 0;
+  color: #999;
+  font-size: 14px;
+}
+
+.alerts-panel__empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #4caf50;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.alerts-panel__content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.alerts-panel__item {
+  padding: 15px;
+  border-left: 4px solid;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.alerts-panel__alert {
+  display: flex;
+  flex-direction: column;
+}
+
+.alerts-panel__top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.alert__badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.alert__badge--info {
+  background-color: #2196f3;
+  color: white;
+}
+
+.alert__badge--warning {
+  background-color: #ff9800;
+  color: white;
+}
+
+.alert__badge--danger {
+  background-color: #f84840;
+  color: white;
+}
+
+.alert__badge--unknown {
+  background-color: #999;
+  color: white;
+}
+
+.alerts-panel__title {
+  margin: 0;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.alerts-panel__time {
+  display: block;
+  color: #999;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.alerts-panel__btn-ack {
+  align-self: flex-start;
+  padding: 6px 12px;
+  background-color: #0084d1;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.alerts-panel__btn-ack:hover:not(:disabled) {
+  background-color: #0074bb;
+}
+
+.alerts-panel__btn-ack:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

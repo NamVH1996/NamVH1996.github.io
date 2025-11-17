@@ -1,0 +1,58 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/public/app/plugins/apps/plugin.schema.json",
+  "type": "app",
+  "id": "all-in-one-app",
+  "name": "All-in-One Monitoring App",
+  "version": "1.0.0",
+  "description": "Unified monitoring and visualization platform for all your metrics and services",
+  "author": {
+    "name": "Development Team"
+  },
+  "logos": {
+    "small": "img/logo.png",
+    "large": "img/logo.png"
+  },
+  "info": {
+    "version": "1.0.0",
+    "updated": "2025-11-17",
+    "links": [],
+    "logos": {
+      "small": "img/logo.png",
+      "large": "img/logo.png"
+    },
+    "screenshots": [],
+    "author": {
+      "name": "Development Team",
+      "url": "https://grafana.com"
+    },
+    "support": "community",
+    "category": "monitoring"
+  },
+  "routes": [
+    {
+      "path": "/a/all-in-one-app",
+      "pageComponent": "pages/AppPage",
+      "role": "Viewer"
+    },
+    {
+      "path": "/a/all-in-one-app/dashboards",
+      "pageComponent": "pages/DashboardsPage",
+      "role": "Viewer"
+    },
+    {
+      "path": "/a/all-in-one-app/settings",
+      "pageComponent": "pages/SettingsPage",
+      "role": "Admin"
+    }
+  ],
+  "navigation": {
+    "label": "All-in-One",
+    "description": "Unified monitoring dashboard",
+    "icon": "dashboard"
+  },
+  "includes": [],
+  "dependencies": {
+    "grafanaVersion": "10.0.0",
+    "plugins": []
+  }
+}
