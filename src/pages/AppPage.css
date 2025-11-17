@@ -34,6 +34,35 @@
   cursor: not-allowed;
 }
 
+.app-page__navigation {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  border-color: #0084d1;
+  background-color: #f0f6ff;
+  color: #0084d1;
+  box-shadow: 0 2px 8px rgba(0, 132, 209, 0.1);
+}
+
 .app-page__error {
   padding: 16px;
   background-color: #f84840;

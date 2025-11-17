@@ -61,6 +61,24 @@ export const AppPage: React.FC = () => {
           </button>
         </div>
 
+        <div className="app-page__navigation">
+          <a href="/plugins/grafana-all-in-one-app/page/alerts" className="nav-link">
+            📊 Alert Management
+          </a>
+          <a href="/plugins/grafana-all-in-one-app/page/contact-points" className="nav-link">
+            📞 Contact Points
+          </a>
+          <a href="/plugins/grafana-all-in-one-app/page/data-enrichment" className="nav-link">
+            🔍 Data Enrichment
+          </a>
+          <a href="/plugins/grafana-all-in-one-app/page/dashboards" className="nav-link">
+            📈 Dashboards
+          </a>
+          <a href="/plugins/grafana-all-in-one-app/page/settings" className="nav-link">
+            ⚙️ Settings
+          </a>
+        </div>
+
         {error && (
           <div className="app-page__error">
             <p>Error: {error}</p>
