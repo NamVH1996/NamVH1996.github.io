@@ -12,6 +12,7 @@ import (
 	"github.com/NamVH1996/grafana-alert-plugin/pkg/alertmanager"
 	"github.com/NamVH1996/grafana-alert-plugin/pkg/api"
 	"github.com/NamVH1996/grafana-alert-plugin/pkg/config"
+	"github.com/NamVH1996/grafana-alert-plugin/pkg/storage"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 )
@@ -48,9 +49,16 @@ func main() {
 	router.Use(api.CORSMiddleware)
 	router.Use(api.RecoveryMiddleware)
 
+	// Setup storage
+	store := storage.NewInMemoryStorage()
+
 	// Setup API handlers
 	handler := api.NewHandler(amClient)
 	handler.RegisterRoutes(router)
+
+	// Setup Swagger handlers
+	swaggerHandler := api.NewSwaggerHandler(store)
+	swaggerHandler.RegisterSwaggerRoutes(router)
 
 	// Start server
 	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)

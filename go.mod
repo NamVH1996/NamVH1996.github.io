@@ -3,6 +3,7 @@ module github.com/NamVH1996/grafana-alert-plugin
 go 1.21
 
 require (
+	github.com/google/uuid v1.6.0
 	github.com/grafana/grafana-plugin-sdk-go v0.215.0
 	github.com/gorilla/mux v1.8.1
 	github.com/prometheus/alertmanager v0.26.0
