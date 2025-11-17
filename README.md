@@ -26,18 +26,16 @@ Instead of managing multiple monitoring tools (Prometheus, Datadog, New Relic, e
 
 ## 🚀 Quick Start
 
-### 1. Setup Backend (Go)
+### 1. Setup & Run Backend (Go)
 
 ```bash
-cd backend
-
 # Build the plugin backend
 make build
 
 # Or run with hot reload in development
 make dev
 
-# Or use Docker
+# Or use Docker Compose (starts AlertManager + Backend)
 docker-compose up -d
 ```
 
@@ -66,33 +64,43 @@ sudo systemctl restart grafana-server
 3. Set API Backend URL to `http://localhost:8080`
 4. Save configuration
 
-For detailed instructions, see [SETUP.md](./SETUP.md) and [backend/README.md](./backend/README.md)
+For detailed instructions, see [SETUP.md](./SETUP.md) and [BACKEND.md](./BACKEND.md)
 
-## 📋 Project Structure
+## 📋 Project Structure (Grafana Template)
 
 ```
 .
-├── src/                      # Frontend (React/TypeScript)
-│   ├── api/                  # API client for backend
-│   ├── pages/                # Dashboard pages
-│   ├── components/           # UI components
-│   └── plugin.json           # Plugin manifest
+├── src/                           # Frontend (React/TypeScript)
+│   ├── api/                       # API client for backend
+│   ├── pages/                     # Dashboard pages
+│   ├── components/                # UI components
+│   ├── module.ts                  # Plugin entry
+│   └── plugin.json                # Plugin manifest
 │
-├── backend/                  # Backend (Go)
-│   ├── cmd/                  # Application entry point
-│   ├── pkg/
-│   │   ├── api/              # HTTP handlers
-│   │   ├── models/           # Data models
-│   │   ├── alertmanager/     # AlertManager client
-│   │   └── config/           # Configuration
-│   ├── Makefile              # Build commands
-│   ├── Dockerfile            # Container image
-│   └── docker-compose.yml    # Development environment
+├── pkg/                           # Backend (Go) - Integrated at root
+│   ├── main.go                    # Application entry point
+│   ├── api/                       # HTTP handlers
+│   │   ├── handlers.go
+│   │   └── middleware.go
+│   ├── models/                    # Data models
+│   │   └── alert.go
+│   ├── alertmanager/              # AlertManager client
+│   │   └── client.go
+│   └── config/                    # Configuration
+│       └── config.go
 │
-├── package.json              # Frontend dependencies
-├── tsconfig.json             # TypeScript config
-├── webpack.config.js         # Frontend build config
-└── README.md                 # This file
+├── go.mod / go.sum                # Go dependencies
+├── Makefile                       # Build commands
+├── Dockerfile                     # Container image
+├── docker-compose.yml             # Development environment
+├── alertmanager.yml               # AlertManager config
+│
+├── package.json                   # Frontend dependencies
+├── tsconfig.json                  # TypeScript config
+├── webpack.config.js              # Frontend build config
+├── SETUP.md                       # Frontend setup guide
+├── BACKEND.md                     # Backend setup guide
+└── README.md                      # This file
 ```
 
 ## 🔗 Architecture
@@ -105,13 +113,12 @@ Backend Server (Go)
 AlertManager (Separate Service)
 ```
 
-See [backend/ARCHITECTURE.md](./backend/ARCHITECTURE.md) for detailed architecture documentation.
+See [BACKEND.md](./BACKEND.md) for detailed architecture documentation.
 
 ## 📚 Documentation
 
 - **[SETUP.md](./SETUP.md)** - Frontend setup and deployment guide
-- **[backend/README.md](./backend/README.md)** - Backend setup, API endpoints, and development
-- **[backend/ARCHITECTURE.md](./backend/ARCHITECTURE.md)** - System architecture and data flow
+- **[BACKEND.md](./BACKEND.md)** - Backend setup, API endpoints, and architecture
 
 ## 🔌 API Endpoints
 
@@ -126,7 +133,7 @@ GET  /api/health                    # Health status
 GET  /api/ping                      # Ping check
 ```
 
-See [backend/README.md](./backend/README.md#api-endpoints) for detailed endpoint documentation.
+See [BACKEND.md](./BACKEND.md#api-endpoints) for detailed endpoint documentation.
 
 ## 🔐 Configuration
 
@@ -145,12 +152,12 @@ See [backend/README.md](./backend/README.md#api-endpoints) for detailed endpoint
 
 When you're ready to integrate your APIs from Swagger:
 
-1. **Backend:** Add new service clients in `backend/pkg/`
-2. **Add Handlers:** Implement HTTP handlers for new endpoints
+1. **Backend:** Add new service clients in `pkg/` directory
+2. **Add Handlers:** Implement HTTP handlers for new endpoints in `pkg/api/handlers.go`
 3. **Frontend:** Update API service calls in `src/api/services.ts`
 4. **Configuration:** Add new API endpoints in settings
 
-See respective README files for detailed integration steps.
+See [BACKEND.md](./BACKEND.md) for detailed integration steps.
 
 ## 🛠️ Development
 
@@ -164,7 +171,6 @@ npm run format     # Format code
 
 ### Backend Development
 ```bash
-cd backend
 make dev           # Hot reload development
 make build         # Build binary
 make test          # Run tests
@@ -177,7 +183,6 @@ make fmt           # Format code
 Quick start with Docker Compose:
 
 ```bash
-cd backend
 docker-compose up -d
 ```
 
@@ -187,11 +192,11 @@ This starts:
 
 ## 🚨 Troubleshooting
 
-See [backend/README.md](./backend/README.md#troubleshooting) for common issues and solutions.
+See [BACKEND.md](./BACKEND.md#troubleshooting) for common issues and solutions.
 
 ## 📝 Development Workflow
 
-1. **Backend First** - Start the backend: `cd backend && make dev`
+1. **Backend First** - Start the backend: `make dev`
 2. **Frontend Next** - Build frontend: `npm run build`
 3. **Install in Grafana** - Copy `dist/` to plugins directory
 4. **Configure** - Set API endpoint in plugin settings

@@ -16,8 +16,8 @@ GOGET=$(GOCMD) get
 GOMOD=$(GOCMD) mod
 
 # Directories
-BACKEND_DIR=$(shell pwd)
-BIN_DIR=$(BACKEND_DIR)/bin
+ROOT_DIR=$(shell pwd)
+BIN_DIR=$(ROOT_DIR)/bin
 
 help: ## Display this help message
 	@echo "Usage: make [target]"
@@ -31,7 +31,7 @@ deps: ## Download dependencies
 
 build: ## Build the plugin backend
 	mkdir -p $(BIN_DIR)
-	$(GOBUILD) -o $(BIN_DIR)/$(BINARY_NAME) $(LDFLAGS) -v ./cmd
+	$(GOBUILD) -o $(BIN_DIR)/$(BINARY_NAME) $(LDFLAGS) -v ./pkg
 
 run: build ## Build and run the plugin backend
 	./$(BIN_DIR)/$(BINARY_NAME)

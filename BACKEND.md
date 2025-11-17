@@ -1,24 +1,31 @@
-# Grafana Alert Plugin - Backend (Go)
+# Backend (Go) - Grafana Alert Plugin
 
 This is the backend server for the Grafana All-in-One Alert Plugin. It provides REST APIs to fetch, filter, and manage alerts from AlertManager.
 
 ## Architecture
 
 ```
-Grafana UI (React) ← HTTP ← Plugin Backend (Go) ← AlertManager API
-                                ↓
-                          Prometheus/Metrics
+┌──────────────────────────────────────┐
+│    Grafana UI (React/TypeScript)     │
+│   - Alerts Display                   │
+│   - Filtering & Search               │
+│   - Settings Panel                   │
+└─────────────────┬────────────────────┘
+                  │ HTTP REST
+┌─────────────────▼────────────────────┐
+│    Plugin Backend (Go)                │
+│   - /api/alerts (LIST/FILTER)        │
+│   - /api/alerts/stats                │
+│   - /api/alerts/groups               │
+│   - /api/health                      │
+└─────────────────┬────────────────────┘
+                  │ AlertManager API
+┌─────────────────▼────────────────────┐
+│    AlertManager (separate service)    │
+│   - Alert management                 │
+│   - Notification routing             │
+└──────────────────────────────────────┘
 ```
-
-## Features
-
-- ✅ **Alert Listing** - Fetch alerts from AlertManager with filtering
-- ✅ **Alert Filtering** - Filter by status, severity, group, search term
-- ✅ **Alert Statistics** - Get alert counts and statistics
-- ✅ **Alert Grouping** - Group alerts by labels
-- ✅ **Health Checks** - Monitor AlertManager connectivity
-- ✅ **CORS Support** - Works seamlessly with Grafana frontend
-- ✅ **Logging** - Structured JSON logging for debugging
 
 ## Quick Start
 
@@ -54,7 +61,6 @@ make run
 
 ```bash
 # Build and run with Docker Compose
-# Starts: AlertManager (9093) + Plugin Backend (8080)
 docker-compose up -d
 
 # View logs
@@ -240,27 +246,17 @@ make test-coverage
 ## Project Structure
 
 ```
-backend/
-├── cmd/
-│   └── main.go              # Application entry point
-├── pkg/
-│   ├── api/
-│   │   ├── handlers.go      # HTTP request handlers
-│   │   └── middleware.go    # HTTP middleware
-│   ├── models/
-│   │   └── alert.go         # Data models
-│   ├── alertmanager/
-│   │   └── client.go        # AlertManager API client
-│   └── config/
-│       └── config.go        # Configuration management
-├── go.mod                   # Go module file
-├── go.sum                   # Go dependencies checksum
-├── Makefile                 # Build commands
-├── Dockerfile              # Container image
-├── docker-compose.yml      # Development environment
-├── alertmanager.yml        # AlertManager configuration
-├── prometheus.yml          # Prometheus configuration
-└── README.md              # This file
+pkg/
+├── main.go              # Application entry point
+├── api/
+│   ├── handlers.go      # HTTP request handlers
+│   └── middleware.go    # HTTP middleware
+├── models/
+│   └── alert.go         # Data models
+├── alertmanager/
+│   └── client.go        # AlertManager API client
+└── config/
+    └── config.go        # Configuration management
 ```
 
 ## Integration with Frontend
@@ -275,14 +271,44 @@ const response = await fetch(
 const alerts = await response.json();
 ```
 
-## Next Steps
+## Adding New API Endpoints (Swagger Integration)
 
-After setting up the backend:
+When you have your Swagger file ready:
 
-1. **Configure AlertManager** - Update `alertmanager.yml` with your notification settings
-2. **Add Custom Rules** - Create `alerts.yml` for your specific alert rules
-3. **Connect Frontend** - Update frontend API endpoint configuration
-4. **Deploy** - Use Docker or system service for production deployment
+1. **Create new service** in `pkg/`:
+   ```go
+   // pkg/yourservice/client.go
+   type Client struct {
+       client *http.Client
+       baseURL string
+   }
+
+   func (c *Client) GetData() (*Response, error) {
+       // implementation
+   }
+   ```
+
+2. **Add handler** in `pkg/api/handlers.go`:
+   ```go
+   func (h *Handler) GetYourData(w http.ResponseWriter, r *http.Request) {
+       // implementation
+       writeJSON(w, http.StatusOK, data)
+   }
+   ```
+
+3. **Register route** in handlers:
+   ```go
+   router.HandleFunc("/api/yourdata", h.GetYourData).Methods("GET")
+   ```
+
+4. **Update Frontend** in `src/api/services.ts`:
+   ```typescript
+   export const yourService = {
+     async getData() {
+       return apiClient.get('/api/yourdata');
+     }
+   };
+   ```
 
 ## Troubleshooting
 

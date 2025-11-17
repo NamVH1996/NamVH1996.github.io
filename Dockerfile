@@ -18,7 +18,7 @@ COPY . .
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo \
     -ldflags="-w -s" \
-    -o /app/bin/grafana-alert-plugin ./cmd
+    -o /app/bin/grafana-alert-plugin ./pkg
 
 # Final stage
 FROM alpine:latest
