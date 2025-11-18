@@ -1,45 +1,43 @@
 version: '3.8'
 
 services:
-  # AlertManager service
-  alertmanager:
-    image: prom/alertmanager:latest
-    container_name: alertmanager
+  grafana:
+    image: grafana/grafana:11.0.0
+    container_name: grafana
     ports:
-      - "9093:9093"
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_PLUGINS_ALLOW_UI_UPDATES=true
+      - GF_INSTALL_PLUGINS=
     volumes:
-      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
-      - alertmanager-storage:/alertmanager
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--storage.path=/alertmanager'
+      - grafana-storage:/var/lib/grafana
+      - ./dist:/var/lib/grafana/plugins/all-in-one-app
     networks:
-      - grafana-network
+      - app-network
     restart: unless-stopped
+    depends_on:
+      - plugin-backend
 
-  # Grafana Alert Plugin Backend
+  # Backend plugin runs as separate service that Grafana calls via API
   plugin-backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: grafana-alert-plugin
+    container_name: plugin-backend
     ports:
       - "8080:8080"
     environment:
       - PORT=8080
       - HOST=0.0.0.0
-      - ALERTMANAGER_URL=http://alertmanager:9093
-      - GRAFANA_URL=http://grafana:3000
       - LOG_LEVEL=info
-    depends_on:
-      - alertmanager
     networks:
-      - grafana-network
+      - app-network
     restart: unless-stopped
 
 volumes:
-  alertmanager-storage:
+  grafana-storage:
 
 networks:
-  grafana-network:
+  app-network:
     driver: bridge
