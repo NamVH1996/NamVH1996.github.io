@@ -15,8 +15,8 @@
     "format": "prettier --write 'src/**/*.{ts,tsx,json,md}'",
     "format:check": "prettier --check 'src/**/*.{ts,tsx,json,md}'",
     "typecheck": "tsc --noEmit",
-    "plugin:dev": "webpack --mode development --watch && npm run copy:plugin",
-    "plugin:build": "webpack --mode production && npm run copy:plugin"
+    "plugin:dev": "npm run dev",
+    "plugin:build": "npm run build && make build"
   },
   "keywords": ["grafana", "plugin", "monitoring", "dashboard"],
   "author": "",

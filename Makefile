@@ -18,6 +18,7 @@ GOMOD=$(GOCMD) mod
 # Directories
 ROOT_DIR=$(shell pwd)
 BIN_DIR=$(ROOT_DIR)/bin
+DIST_DIR=$(ROOT_DIR)/dist
 
 help: ## Display this help message
 	@echo "Usage: make [target]"
@@ -29,11 +30,15 @@ deps: ## Download dependencies
 	$(GOMOD) download
 	$(GOMOD) tidy
 
-build: ## Build the plugin backend
+build: ## Build backend binary into dist/ folder for plugin bundle
+	mkdir -p $(DIST_DIR)
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(DIST_DIR)/$(BINARY_NAME) $(LDFLAGS) -v ./pkg
+
+build-dev: ## Build backend binary for local development
 	mkdir -p $(BIN_DIR)
 	$(GOBUILD) -o $(BIN_DIR)/$(BINARY_NAME) $(LDFLAGS) -v ./pkg
 
-run: build ## Build and run the plugin backend
+run: build-dev ## Build and run the plugin backend locally
 	./$(BIN_DIR)/$(BINARY_NAME)
 
 dev: ## Run in development mode with hot reload
@@ -63,8 +68,15 @@ clean: ## Clean build artifacts
 	$(GOCLEAN)
 	rm -rf $(BIN_DIR)
 	rm -f coverage.out coverage.html
+	# Note: Do NOT remove dist/ as it contains frontend and plugin.json
 
-docker-build: ## Build Docker image
+plugin: ## Build complete plugin bundle (frontend + backend for Grafana)
+	npm run build
+	make build
+	@echo "✓ Plugin bundle ready in dist/"
+	@ls -lh dist/
+
+docker-build: ## Build Docker image for development
 	docker build -t grafana-alert-plugin:$(VERSION) -f Dockerfile .
 	docker tag grafana-alert-plugin:$(VERSION) grafana-alert-plugin:latest
 
@@ -79,6 +91,6 @@ docker-push: docker-build ## Push Docker image to registry
 	docker push grafana-alert-plugin:$(VERSION)
 	docker push grafana-alert-plugin:latest
 
-all: clean deps lint test build ## Clean, download deps, lint, test, and build
+all: clean deps lint test plugin ## Clean, download deps, lint, test, and build plugin
 
 .DEFAULT_GOAL := help
