@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Loader } from '@grafana/ui';
+import { Container, Spinner } from '@grafana/ui';
 import { dashboardService, DashboardData } from '@/api/services';
 import MetricsPanel from '@/components/MetricsPanel';
 import HealthStatusPanel from '@/components/HealthStatusPanel';
@@ -40,7 +40,7 @@ export const AppPage: React.FC = () => {
     return (
       <Container>
         <div className="app-page__loading">
-          <Loader />
+          <Spinner />
           <p>Loading dashboard...</p>
         </div>
       </Container>

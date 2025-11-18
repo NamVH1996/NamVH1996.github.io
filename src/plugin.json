@@ -35,6 +35,21 @@
       "role": "Viewer"
     },
     {
+      "path": "/a/all-in-one-app/alerts",
+      "pageComponent": "pages/AlertsManagementPage",
+      "role": "Viewer"
+    },
+    {
+      "path": "/a/all-in-one-app/contact-points",
+      "pageComponent": "pages/ContactPointsPage",
+      "role": "Viewer"
+    },
+    {
+      "path": "/a/all-in-one-app/data-enrichment",
+      "pageComponent": "pages/DataEnrichmentPage",
+      "role": "Viewer"
+    },
+    {
       "path": "/a/all-in-one-app/dashboards",
       "pageComponent": "pages/DashboardsPage",
       "role": "Viewer"

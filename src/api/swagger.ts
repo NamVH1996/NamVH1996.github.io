@@ -107,8 +107,15 @@ export interface VMMapping {
   updated_at: string;
 }
 
+export interface VMMappingCreate {
+  vm_id?: string;
+  vm_name?: string;
+  vm_private_ip?: string;
+  owner?: string;
+}
+
 export const vmMappingsService = {
-  create: (data: VMMapping) =>
+  create: (data: VMMappingCreate) =>
     apiClient.post<VMMapping>('/api/vm-mappings', data),
 
   list: () =>
@@ -135,8 +142,14 @@ export interface EscalationMapping {
   updated_at: string;
 }
 
+export interface EscalationMappingCreate {
+  business_line: string;
+  l1?: string;
+  l2?: string;
+}
+
 export const escalationMappingsService = {
-  create: (data: EscalationMapping) =>
+  create: (data: EscalationMappingCreate) =>
     apiClient.post<EscalationMapping>('/api/escalation-mappings', data),
 
   list: () =>
@@ -167,8 +180,18 @@ export interface ExtractionRule {
   updated_at: string;
 }
 
+export interface ExtractionRuleCreate {
+  name: string;
+  label_key: string;
+  regex_pattern: string;
+  output_key: string;
+  description?: string;
+  enabled?: boolean;
+  priority?: number;
+}
+
 export const extractionRulesService = {
-  create: (data: ExtractionRule) =>
+  create: (data: ExtractionRuleCreate) =>
     apiClient.post<ExtractionRule>('/api/extraction-rules', data),
 
   list: (enabledOnly = false) =>

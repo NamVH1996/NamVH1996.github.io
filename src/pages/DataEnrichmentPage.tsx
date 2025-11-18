@@ -5,8 +5,11 @@ import {
   escalationMappingsService,
   extractionRulesService,
   VMMapping,
+  VMMappingCreate,
   EscalationMapping,
+  EscalationMappingCreate,
   ExtractionRule,
+  ExtractionRuleCreate,
 } from '@/api/swagger';
 import './DataEnrichmentPage.css';
 
@@ -80,7 +83,7 @@ export const DataEnrichmentPage: React.FC = () => {
   const handleSaveVM = async () => {
     try {
       setLoading(true);
-      const payload = {
+      const payload: VMMappingCreate = {
         vm_id: vmFormData.vm_id || undefined,
         vm_name: vmFormData.vm_name || undefined,
         vm_private_ip: vmFormData.vm_private_ip || undefined,
@@ -139,7 +142,7 @@ export const DataEnrichmentPage: React.FC = () => {
   const handleSaveEscalation = async () => {
     try {
       setLoading(true);
-      const payload = {
+      const payload: EscalationMappingCreate = {
         business_line: escalationFormData.business_line,
         l1: escalationFormData.l1 || undefined,
         l2: escalationFormData.l2 || undefined,
@@ -196,7 +199,7 @@ export const DataEnrichmentPage: React.FC = () => {
   const handleSaveExtraction = async () => {
     try {
       setLoading(true);
-      const payload = {
+      const payload: ExtractionRuleCreate = {
         name: extractionFormData.name,
         label_key: extractionFormData.label_key,
         regex_pattern: extractionFormData.regex_pattern,
