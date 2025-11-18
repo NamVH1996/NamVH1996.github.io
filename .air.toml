@@ -4,8 +4,8 @@ tmp_dir = "tmp"
 
 [build]
 args_bin = []
-bin = "./bin/grafana-alert-plugin"
-cmd = "go build -o ./bin/grafana-alert-plugin ./cmd"
+bin = "./bin/grafana-all-in-one-plugin-app"
+cmd = "go build -o ./bin/grafana-all-in-one-plugin-app ./pkg"
 delay = 1000
 exclude_dir = ["assets", "tmp", "vendor", "testdata"]
 exclude_file = []
