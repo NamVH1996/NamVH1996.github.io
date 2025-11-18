@@ -1,194 +1,268 @@
 # All-in-One Grafana Plugin - Setup Guide
 
-## 📋 Project Overview
+## 📋 Architecture
 
-This is a **Grafana Plugin App** designed for unified monitoring and visualization of all your services and metrics in a single platform, eliminating the need for multiple monitoring systems.
-
-### Key Features:
-- ✅ **All-in-One Dashboard** - Centralized monitoring for all services
-- ✅ **Health Status Monitoring** - Real-time service health checks
-- ✅ **Alerts Management** - Active alerts display and acknowledgment
-- ✅ **Metrics Visualization** - Time-series metrics display
-- ✅ **Custom Dashboards** - Create and manage multiple dashboards
-- ✅ **API Integration Ready** - Pre-built API client structure for Swagger integration
-
-## 🚀 Quick Start
-
-### 1. Install Dependencies
-
-```bash
-npm install
+```
+┌─────────────────────────────────────────┐
+│  Grafana (Port 3000)                    │
+│  ├─ All-in-One Plugin Frontend (React)  │
+│  └─ Load from ./dist folder             │
+└─────────────────────────────────────────┘
+         ↓ HTTP REST API (localhost:8080)
+┌─────────────────────────────────────────┐
+│  Backend Plugin (Port 8080) - Golang    │
+│  REST API for Alert Management          │
+└─────────────────────────────────────────┘
 ```
 
-### 2. Build the Plugin
+## 🚀 Quick Start (Docker - Recommended)
+
+### Prerequisites
+- Docker & Docker Compose
+- Node.js 18+ (for building frontend)
+
+### Option 1: Full Docker Setup (Easiest)
 
 ```bash
+# 1. Build frontend
+npm install --legacy-peer-deps
+npm run build
+
+# 2. Run with Docker Compose
+docker-compose up -d
+```
+
+Access Grafana at: **http://localhost:3000**
+- Default credentials: `admin / admin`
+
+Backend runs on: `http://localhost:8080` (automatically)
+
+### Option 2: Manual Local Setup (For Development)
+
+#### Step 1: Build Frontend
+
+```bash
+npm install --legacy-peer-deps
 npm run build
 ```
 
-### 3. Development Mode
-
-Watch for changes and rebuild automatically:
+#### Step 2: Start Backend
 
 ```bash
-npm run dev
+go build -o plugin ./pkg
+./plugin
 ```
 
-### 4. Install in Grafana
+Backend will run on: `http://localhost:8080`
 
-1. Copy the `dist` folder to your Grafana plugins directory:
-   ```bash
-   cp -r dist /var/lib/grafana/plugins/all-in-one-app
-   ```
+#### Step 3: Install Plugin in Grafana
 
-2. Restart Grafana:
-   ```bash
-   sudo systemctl restart grafana-server
-   ```
+**For Docker Grafana:**
+```bash
+# Copy plugin folder to Grafana plugins
+docker cp dist grafana:/var/lib/grafana/plugins/all-in-one-app
 
-3. Enable the plugin in Grafana:
-   - Go to **Configuration → Plugins**
-   - Find "All-in-One Monitoring App"
-   - Click "Enable"
-
-## 🔌 API Integration (Swagger)
-
-When you have your Swagger file ready:
-
-### 1. Import Your Swagger Definition
-
-Update the API service files in `src/api/services.ts`:
-
-```typescript
-// Example: Add your API endpoints based on Swagger definition
-export const yourNewService = {
-  async getYourData(): Promise<YourDataType> {
-    return apiClient.get<YourDataType>('/api/your-endpoint');
-  }
-};
+# Restart Grafana
+docker restart grafana
 ```
 
-### 2. Configure API Settings
+**For Local Grafana:**
+```bash
+# Copy to local Grafana plugins folder
+cp -r dist /var/lib/grafana/plugins/all-in-one-app
 
-1. Open the plugin in Grafana
-2. Go to **Settings** tab
-3. Enter your API endpoint URL
-4. Enter your API Key
-5. Click **Save Settings**
+# Restart Grafana
+sudo systemctl restart grafana-server
+```
 
-### 3. Update Dashboard Components
+#### Step 4: Enable Plugin
 
-Modify the components in `src/components/` to use your new API endpoints:
+1. Open Grafana: http://localhost:3000
+2. Go to: **Administration → Plugins**
+3. Search for "All-in-One"
+4. Click **Enable**
+5. Go to plugin: **Administration → All-in-One Monitoring App**
 
-- `MetricsPanel.tsx` - Display your metrics
-- `HealthStatusPanel.tsx` - Show service health
-- `AlertsPanel.tsx` - Display alerts
+#### Step 5: Configure Backend URL
+
+In plugin **Settings** tab, set:
+```
+API Backend URL: http://localhost:8080
+```
 
 ## 📁 Project Structure
 
 ```
-├── src/
-│   ├── api/
-│   │   ├── client.ts          # Axios-based API client
-│   │   └── services.ts        # Service definitions (Update here with Swagger)
-│   ├── pages/
-│   │   ├── AppPage.tsx        # Main dashboard page
-│   │   ├── DashboardsPage.tsx # Dashboards management
-│   │   └── SettingsPage.tsx   # Configuration page
-│   ├── components/
-│   │   ├── MetricsPanel.tsx   # Metrics display
-│   │   ├── HealthStatusPanel.tsx # Service health
-│   │   └── AlertsPanel.tsx    # Alerts display
-│   ├── module.ts              # Plugin entry point
-│   └── plugin.json            # Plugin manifest
-├── package.json               # Dependencies
-├── tsconfig.json             # TypeScript config
-├── webpack.config.js         # Build config
-└── dist/                      # Built plugin (generated)
+.
+├── src/                          # Frontend (React/TypeScript)
+│   ├── pages/                    # UI Pages
+│   │   ├── AppPage.tsx           # Dashboard home
+│   │   ├── AlertsManagementPage.tsx
+│   │   ├── ContactPointsPage.tsx
+│   │   ├── DataEnrichmentPage.tsx
+│   │   └── ...
+│   ├── api/                      # API clients
+│   │   ├── client.ts             # HTTP client
+│   │   └── swagger.ts            # API services
+│   ├── module.ts                 # Plugin entry
+│   └── plugin.json               # Plugin manifest
+│
+├── pkg/                          # Backend (Go)
+│   ├── main.go                   # Entry point
+│   ├── api/                      # HTTP handlers
+│   ├── models/                   # Data models
+│   ├── storage/                  # Data storage (in-memory)
+│   └── alertmanager/             # AlertManager client
+│
+├── dist/                         # Built plugin (after npm run build)
+│
+├── package.json                  # Frontend dependencies
+├── go.mod / go.sum               # Go dependencies
+├── webpack.config.js             # Frontend bundler
+├── tsconfig.json                 # TypeScript config
+├── Dockerfile                    # Backend Docker image
+├── docker-compose.yml            # Multi-container setup
+└── README.md                     # Project overview
 ```
 
 ## 🛠️ Development Workflow
 
-### 1. Run Development Server
+### Development Mode (Auto-rebuild)
+
 ```bash
+# Terminal 1: Frontend watch mode
 npm run dev
+
+# Terminal 2: Backend dev with hot reload
+go run ./pkg
+
+# Terminal 3: Grafana (Docker or local)
+docker-compose up grafana
 ```
 
-### 2. Make Changes
-- Edit your React components in `src/`
-- Changes are automatically recompiled
+### Building for Production
 
-### 3. Format & Lint
 ```bash
-npm run format
-npm run lint
-```
-
-### 4. Build for Production
-```bash
+# Frontend
 npm run build
+
+# Backend (optional - Docker builds it)
+go build -o plugin ./pkg
+
+# Start with Docker
+docker-compose up -d
 ```
 
-## 🔗 Next Steps
+## 🔌 API Endpoints
 
-1. **Get your Swagger file** - Prepare your API definition
-2. **Update services.ts** - Add your API endpoints based on Swagger
-3. **Configure settings** - Add your API URL and key in the plugin settings
-4. **Customize components** - Modify dashboard components to match your data
-5. **Test integration** - Verify API calls and data display
-
-## 📝 Available Scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Watch and rebuild on changes |
-| `npm run build` | Build for production |
-| `npm run test` | Run tests |
-| `npm run lint` | Check code style |
-| `npm run format` | Format code with Prettier |
-| `npm run sign` | Sign plugin for Grafana registry |
-
-## 🔐 Environment Variables
-
-Create a `.env` file for sensitive configuration:
+Backend provides REST API at `http://localhost:8080`:
 
 ```
-API_URL=https://api.example.com
-API_KEY=your-api-key-here
-GRAFANA_URL=http://localhost:3000
+GET  /api/health               # Health check
+GET  /api/alerts               # List alerts
+POST /api/alerts               # Create alert
+GET  /api/contact-points       # List contact points
+POST /api/contact-points       # Create contact point
+GET  /api/vm-mappings          # VM mappings
+POST /api/escalation-mappings  # Escalation rules
+...
 ```
 
-## 📚 Grafana Plugin Documentation
+See [BACKEND.md](./BACKEND.md) for complete API documentation.
 
-- [Grafana Plugin Development](https://grafana.com/docs/grafana/latest/developers/plugins/)
-- [Grafana App Plugins](https://grafana.com/docs/grafana/latest/developers/plugins/apps/)
-- [Grafana UI Components](https://grafana.com/docs/grafana/latest/packages_api/ui/)
+## 📦 Dependencies
+
+### Frontend
+- React 18.3.1
+- TypeScript 5.6.2
+- Grafana UI 11.0.0
+- Webpack 5.95.0
+
+### Backend
+- Go 1.21
+- gorilla/mux (HTTP router)
+- google/uuid (ID generation)
+- sirupsen/logrus (logging)
+
+### Runtime
+- Grafana 11.0.0
+- Docker 20.10+ (for Docker setup)
+- Node.js 18+ (for building)
 
 ## 🐛 Troubleshooting
 
-### Plugin not appearing in Grafana
-- Ensure dist folder is in the correct plugins directory
-- Check Grafana logs: `journalctl -u grafana-server -f`
+### Plugin not showing in Grafana
 
-### API connection errors
-- Verify API URL and key in Settings
-- Check CORS settings on your API server
-- Check browser console for detailed error messages
+1. Check if `dist/` folder exists:
+   ```bash
+   ls -la dist/
+   ```
+
+2. Rebuild plugin:
+   ```bash
+   npm run build
+   ```
+
+3. Copy to Grafana:
+   ```bash
+   docker cp dist grafana:/var/lib/grafana/plugins/all-in-one-app
+   docker restart grafana
+   ```
+
+4. Check Grafana logs:
+   ```bash
+   docker logs grafana
+   ```
+
+### Backend connection fails
+
+1. Check if backend is running:
+   ```bash
+   curl http://localhost:8080/api/health
+   ```
+
+2. Check plugin Settings - API URL must be correct
+
+3. If using Docker, ensure both services are on same network:
+   ```bash
+   docker network ls
+   docker inspect app-network
+   ```
 
 ### Build errors
-- Delete `node_modules` and `dist` folders
-- Run `npm install` again
-- Clear webpack cache: `rm -rf .webpack`
 
-## 📦 Ready for Swagger Integration
+1. Clean and rebuild:
+   ```bash
+   rm -rf node_modules dist
+   npm install --legacy-peer-deps
+   npm run build
+   ```
 
-This plugin is fully prepared for Swagger/OpenAPI integration. Once you have your Swagger file:
+2. Check Node version:
+   ```bash
+   node --version  # Should be 18+
+   npm --version   # Should be 9+
+   ```
 
-1. Review the API structure in `src/api/services.ts`
-2. Add your endpoints based on Swagger definitions
-3. Update component data binding
-4. Test with your actual API
+## 📚 Additional Resources
 
----
+- [Grafana Plugin Docs](https://grafana.com/docs/grafana/latest/developers/plugins/)
+- [Backend API Reference](./BACKEND.md)
+- [Grafana Docker Image](https://hub.docker.com/r/grafana/grafana)
 
-**Let's build the ultimate monitoring dashboard! 🚀**
+## ✅ Verification Checklist
+
+- [ ] Frontend builds without errors: `npm run build`
+- [ ] Backend compiles: `go build ./pkg`
+- [ ] Docker images build: `docker-compose build`
+- [ ] Grafana starts: `docker-compose up`
+- [ ] Plugin loads in Grafana UI
+- [ ] API responds: `curl http://localhost:8080/api/health`
+- [ ] Plugin pages load without errors
+
+## 🚀 Next Steps
+
+1. **Enable the plugin** in Grafana
+2. **Configure API backend URL** in plugin settings
+3. **Test the features** in each tab
+4. **Integrate with your APIs** - see BACKEND.md for details
