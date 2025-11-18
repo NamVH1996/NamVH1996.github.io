@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/NamVH1996/grafana-alert-plugin/pkg/alertmanager"
 	"github.com/NamVH1996/grafana-alert-plugin/pkg/models"
 	"github.com/NamVH1996/grafana-alert-plugin/pkg/storage"
 	"github.com/google/uuid"
@@ -15,13 +16,15 @@ import (
 
 // SwaggerHandler handles all swagger API endpoints
 type SwaggerHandler struct {
-	storage storage.Storage
+	storage   storage.Storage
+	amClient  *alertmanager.Client
 }
 
 // NewSwaggerHandler creates a new swagger handler
-func NewSwaggerHandler(s storage.Storage) *SwaggerHandler {
+func NewSwaggerHandler(s storage.Storage, amClient *alertmanager.Client) *SwaggerHandler {
 	return &SwaggerHandler{
-		storage: s,
+		storage:   s,
+		amClient:  amClient,
 	}
 }
 
@@ -114,46 +117,85 @@ func (h *SwaggerHandler) GrafanaWebhook(w http.ResponseWriter, r *http.Request) 
 	})
 }
 
-// ListAlerts lists all alerts with filtering
+// ListAlerts lists all alerts from AlertManager with filtering
 func (h *SwaggerHandler) ListAlerts(w http.ResponseWriter, r *http.Request) {
 	limit := getQueryInt(r, "limit", 50)
 	offset := getQueryInt(r, "offset", 0)
 
-	filters := make(map[string]string)
-	if severity := r.URL.Query().Get("severity"); severity != "" {
-		filters["severity"] = severity
-	}
-	if status := r.URL.Query().Get("status"); status != "" {
-		filters["status"] = status
-	}
-	if processingStatus := r.URL.Query().Get("processing_status"); processingStatus != "" {
-		filters["processing_status"] = processingStatus
+	// Build filter from query parameters
+	filter := &models.AlertFilter{
+		Status:     r.URL.Query().Get("status"),
+		Severity:   r.URL.Query().Get("severity"),
+		Limit:      limit,
+		Offset:     offset,
 	}
 
-	alerts, total, err := h.storage.ListAlerts(limit, offset, filters)
+	// Get alerts from AlertManager
+	response, err := h.amClient.GetAlerts(filter)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		log.WithError(err).Error("Failed to fetch alerts from AlertManager")
+		writeError(w, http.StatusInternalServerError, "Failed to fetch alerts from AlertManager")
 		return
+	}
+
+	// Store in local storage for enrichment/caching
+	if response != nil {
+		for _, alert := range response.Alerts {
+			enrichedAlert := &models.AlertLog{
+				ID:               alert.ID,
+				AlertName:        alert.Summary,
+				Severity:         alert.Severity,
+				Status:           alert.Status,
+				ProcessingStatus: "received",
+				Summary:          alert.Summary,
+				Description:      alert.Description,
+				StartsAt:         alert.StartsAt,
+				Fingerprint:      alert.ID,
+				Labels:           alert.Labels,
+				CreatedAt:        time.Now(),
+				UpdatedAt:        time.Now(),
+			}
+			h.storage.SaveAlert(enrichedAlert)
+		}
 	}
 
 	writeJSON(w, http.StatusOK, map[string]interface{}{
 		"status": "success",
-		"total":  total,
+		"total":  response.Total,
+		"count":  response.Count,
 		"limit":  limit,
 		"offset": offset,
-		"data":   alerts,
+		"data":   response.Alerts,
 	})
 }
 
-// GetAlertDetail gets single alert detail
+// GetAlertDetail gets single alert detail from AlertManager
 func (h *SwaggerHandler) GetAlertDetail(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	alertID := vars["alert_id"]
 
+	// Try to get from AlertManager first
+	response, err := h.amClient.GetAlerts(&models.AlertFilter{
+		Status: "all",
+		Limit: 1000, // Fetch enough to find the alert
+	})
+	if err == nil && response != nil {
+		// Search for alert with matching ID
+		for _, alert := range response.Alerts {
+			if alert.ID == alertID {
+				writeJSON(w, http.StatusOK, map[string]interface{}{
+					"status": "success",
+					"data":   alert,
+				})
+				return
+			}
+		}
+	}
+
+	// Fallback to local storage if not found in AlertManager
 	alert, err := h.storage.GetAlert(alertID)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
-		return
+		log.WithError(err).Error("Failed to get alert from storage")
 	}
 
 	if alert == nil {
@@ -167,11 +209,12 @@ func (h *SwaggerHandler) GetAlertDetail(w http.ResponseWriter, r *http.Request) 
 	})
 }
 
-// GetAlertStats returns alert statistics
+// GetAlertStats returns alert statistics from AlertManager
 func (h *SwaggerHandler) GetAlertStats(w http.ResponseWriter, r *http.Request) {
-	stats, err := h.storage.GetAlertStats()
+	stats, err := h.amClient.GetAlertStats()
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		log.WithError(err).Error("Failed to fetch stats from AlertManager")
+		writeError(w, http.StatusInternalServerError, "Failed to fetch statistics")
 		return
 	}
 

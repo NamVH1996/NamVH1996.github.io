@@ -49,15 +49,15 @@ func main() {
 	router.Use(api.CORSMiddleware)
 	router.Use(api.RecoveryMiddleware)
 
-	// Setup storage
+	// Setup storage (for enrichment/caching)
 	store := storage.NewInMemoryStorage()
 
 	// Setup API handlers
 	handler := api.NewHandler(amClient)
 	handler.RegisterRoutes(router)
 
-	// Setup Swagger handlers
-	swaggerHandler := api.NewSwaggerHandler(store)
+	// Setup Swagger handlers (with AlertManager integration)
+	swaggerHandler := api.NewSwaggerHandler(store, amClient)
 	swaggerHandler.RegisterSwaggerRoutes(router)
 
 	// Start server
