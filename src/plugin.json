@@ -67,7 +67,7 @@
   },
   "includes": [],
   "dependencies": {
-    "grafanaVersion": "10.0.0",
+    "grafanaVersion": "11.0.0",
     "plugins": []
   }
 }
