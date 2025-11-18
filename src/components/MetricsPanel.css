@@ -1,0 +1,75 @@
+.metrics-panel {
+  background-color: white;
+  border-radius: 4px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.metrics-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.metrics-panel__header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.metrics-panel__count {
+  margin: 0;
+  color: #999;
+  font-size: 14px;
+}
+
+.metrics-panel__empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #999;
+}
+
+.metrics-panel__content {
+  overflow-x: auto;
+}
+
+.metrics-panel__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.metrics-panel__table thead {
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #ddd;
+}
+
+.metrics-panel__table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 500;
+  color: #333;
+}
+
+.metrics-panel__table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.metrics-panel__table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.metrics-panel__value {
+  font-family: monospace;
+  font-weight: 600;
+  color: #0084d1;
+}
+
+.metrics-panel__time {
+  color: #999;
+  font-size: 12px;
+}

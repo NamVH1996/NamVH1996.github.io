@@ -1,0 +1,98 @@
+.health-status {
+  background-color: white;
+  border-radius: 4px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.health-status__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.health-status__header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.health-status__count {
+  margin: 0;
+  color: #999;
+  font-size: 14px;
+}
+
+.health-status__empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #999;
+}
+
+.health-status__content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.health-status__item {
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.health-status__item:hover {
+  border-color: #ddd;
+  background-color: #f9f9f9;
+}
+
+.health-status__service-name {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.health-status__badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.health-status__badge--success {
+  background-color: #4caf50;
+  color: white;
+}
+
+.health-status__badge--warning {
+  background-color: #ff9800;
+  color: white;
+}
+
+.health-status__badge--danger {
+  background-color: #f84840;
+  color: white;
+}
+
+.health-status__badge--unknown {
+  background-color: #999;
+  color: white;
+}
+
+.health-status__message {
+  margin: 8px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.health-status__time {
+  display: block;
+  color: #999;
+  font-size: 12px;
+}
