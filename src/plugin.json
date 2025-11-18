@@ -4,7 +4,7 @@
   "id": "all-in-one-app",
   "name": "All-in-One Monitoring App",
   "version": "1.0.0",
-  "description": "Unified monitoring and visualization platform for all your metrics and services",
+  "description": "Unified monitoring and visualization platform with alert management, contact points, and data enrichment",
   "author": {
     "name": "Development Team"
   },
@@ -62,12 +62,15 @@
   ],
   "navigation": {
     "label": "All-in-One",
-    "description": "Unified monitoring dashboard",
-    "icon": "dashboard"
+    "description": "Unified monitoring and alert management",
+    "icon": "bell"
   },
+  "backend": true,
+  "executable": "grafana-all-in-one-plugin-app",
   "includes": [],
   "dependencies": {
     "grafanaVersion": "11.0.0",
     "plugins": []
   }
 }
+

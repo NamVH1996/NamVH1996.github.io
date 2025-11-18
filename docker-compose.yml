@@ -9,7 +9,9 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_PLUGINS_ALLOW_UI_UPDATES=true
+      - GF_PLUGINS_ALLOW_UNSIGNED_PLUGINS=all-in-one-app
       - GF_INSTALL_PLUGINS=
+      - GF_LOG_LEVEL=debug
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./dist:/var/lib/grafana/plugins/all-in-one-app

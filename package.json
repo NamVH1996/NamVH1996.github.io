@@ -4,9 +4,10 @@
   "description": "All-in-one Grafana Plugin App for unified monitoring",
   "main": "dist/module.js",
   "scripts": {
-    "dev": "webpack --mode development --watch",
-    "build": "webpack --mode production",
-    "build:watch": "webpack --mode development --watch",
+    "dev": "webpack --mode development --watch && npm run copy:plugin",
+    "build": "webpack --mode production && npm run copy:plugin",
+    "build:watch": "webpack --mode development --watch && npm run copy:plugin",
+    "copy:plugin": "cp src/plugin.json dist/ && cp -r src/img dist/ || true",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint --ext .ts,.tsx src/",
@@ -14,8 +15,8 @@
     "format": "prettier --write 'src/**/*.{ts,tsx,json,md}'",
     "format:check": "prettier --check 'src/**/*.{ts,tsx,json,md}'",
     "typecheck": "tsc --noEmit",
-    "plugin:dev": "webpack --mode development --watch",
-    "plugin:build": "webpack --mode production"
+    "plugin:dev": "webpack --mode development --watch && npm run copy:plugin",
+    "plugin:build": "webpack --mode production && npm run copy:plugin"
   },
   "keywords": ["grafana", "plugin", "monitoring", "dashboard"],
   "author": "",

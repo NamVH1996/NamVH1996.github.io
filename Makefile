@@ -1,7 +1,7 @@
 .PHONY: help build run test clean docker-build docker-push fmt lint
 
 # Variables
-BINARY_NAME=grafana-alert-plugin
+BINARY_NAME=grafana-all-in-one-plugin-app
 VERSION=$(shell git describe --tags --always --dirty)
 BUILD_TIME=$(shell date -u '+%Y-%m-%d_%H:%M:%S')
 GIT_COMMIT=$(shell git rev-parse --short HEAD)
