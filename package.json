@@ -6,10 +6,16 @@
   "scripts": {
     "dev": "webpack --mode development --watch",
     "build": "webpack --mode production",
+    "build:watch": "webpack --mode development --watch",
     "test": "jest",
+    "test:watch": "jest --watch",
     "lint": "eslint --ext .ts,.tsx src/",
+    "lint:fix": "eslint --ext .ts,.tsx src/ --fix",
     "format": "prettier --write 'src/**/*.{ts,tsx,json,md}'",
-    "typecheck": "tsc --noEmit"
+    "format:check": "prettier --check 'src/**/*.{ts,tsx,json,md}'",
+    "typecheck": "tsc --noEmit",
+    "plugin:dev": "webpack --mode development --watch",
+    "plugin:build": "webpack --mode production"
   },
   "keywords": ["grafana", "plugin", "monitoring", "dashboard"],
   "author": "",

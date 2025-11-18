@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Background -->
+  <rect width="128" height="128" fill="#0084d1" rx="16"/>
+
+  <!-- Central circle with graph -->
+  <circle cx="64" cy="64" r="48" fill="#ffffff" opacity="0.95"/>
+
+  <!-- Bar chart -->
+  <rect x="40" y="70" width="6" height="20" fill="#0084d1"/>
+  <rect x="50" y="60" width="6" height="30" fill="#0084d1"/>
+  <rect x="60" y="50" width="6" height="40" fill="#0084d1"/>
+  <rect x="70" y="55" width="6" height="35" fill="#0084d1"/>
+  <rect x="80" y="65" width="6" height="25" fill="#0084d1"/>
+
+  <!-- Baseline -->
+  <line x1="35" y1="90" x2="95" y2="90" stroke="#0084d1" stroke-width="2"/>
+
+  <!-- Alert indicator (top right) -->
+  <circle cx="95" cy="35" r="8" fill="#ff6b6b"/>
+  <text x="95" y="39" text-anchor="middle" font-size="12" font-weight="bold" fill="white">!</text>
+</svg>

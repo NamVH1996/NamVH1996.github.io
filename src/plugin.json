@@ -9,16 +9,16 @@
     "name": "Development Team"
   },
   "logos": {
-    "small": "img/logo.png",
-    "large": "img/logo.png"
+    "small": "img/plugin.svg",
+    "large": "img/plugin.svg"
   },
   "info": {
     "version": "1.0.0",
-    "updated": "2025-11-17",
+    "updated": "2025-11-18",
     "links": [],
     "logos": {
-      "small": "img/logo.png",
-      "large": "img/logo.png"
+      "small": "img/plugin.svg",
+      "large": "img/plugin.svg"
     },
     "screenshots": [],
     "author": {
