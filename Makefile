@@ -43,7 +43,7 @@ run: build-dev ## Build and run the plugin backend locally
 
 dev: ## Run in development mode with hot reload
 	@command -v air >/dev/null 2>&1 || (echo "Installing air..." && go install github.com/cosmtrek/air@v1.43.0)
-	air
+	@PATH="$(shell go env GOPATH)/bin:$$PATH" air
 
 test: ## Run tests
 	$(GOTEST) -v -race -coverprofile=coverage.out ./...
