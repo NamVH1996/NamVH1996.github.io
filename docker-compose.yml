@@ -14,9 +14,13 @@ services:
       - GF_LOG_LEVEL=debug
     volumes:
       - grafana-storage:/var/lib/grafana
-      # Plugin bundle (frontend + backend binary) mounted directly
+      # Frontend plugin (React UI only)
       - ./dist:/var/lib/grafana/plugins/all-in-one-app
+    networks:
+      - app-network
     restart: unless-stopped
+    depends_on:
+      - plugin-backend
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
       interval: 30s
@@ -24,9 +28,36 @@ services:
       retries: 3
       start_period: 40s
 
+  # Backend service (separate microservice)
+  plugin-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: plugin-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - HOST=0.0.0.0
+      - ALERTMANAGER_URL=http://alertmanager:9093
+      - LOG_LEVEL=info
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
   grafana-storage:
 
-# Note: Backend is now part of the plugin bundle
-# Grafana automatically runs the binary: dist/grafana-all-in-one-plugin-app
-# For local development with separate backend service, see QUICK_START.md
+networks:
+  app-network:
+    driver: bridge
+
+# Note: Frontend plugin (dist/) is a React SPA
+# Backend service is a separate Go HTTP server
+# Frontend calls backend at http://plugin-backend:8080 (within Docker network)
+# Or http://localhost:8080 in local development

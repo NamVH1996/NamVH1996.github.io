@@ -30,9 +30,9 @@ deps: ## Download dependencies
 	$(GOMOD) download
 	$(GOMOD) tidy
 
-build: ## Build backend binary into dist/ folder for plugin bundle
-	mkdir -p $(DIST_DIR)
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(DIST_DIR)/$(BINARY_NAME) $(LDFLAGS) -v ./pkg
+build: ## Build backend binary for Docker/production
+	mkdir -p $(BIN_DIR)
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BIN_DIR)/$(BINARY_NAME) $(LDFLAGS) -v ./pkg
 
 build-dev: ## Build backend binary for local development
 	mkdir -p $(BIN_DIR)

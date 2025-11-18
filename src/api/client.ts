@@ -2,8 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 /**
  * API Client for All-in-One Monitoring Plugin
- * Automatically uses Grafana's plugin bridge in production
- * Falls back to direct backend URL in development
+ * Calls backend service at http://localhost:8080 (or http://plugin-backend:8080 in Docker)
  */
 export class APIClient {
   private client: AxiosInstance;
@@ -11,15 +10,9 @@ export class APIClient {
   private apiKey: string = '';
 
   constructor(baseURL: string = '', apiKey: string = '') {
-    // Auto-detect environment
+    // Default to backend service
     if (!baseURL) {
-      // In Grafana plugin environment, use plugin bridge
-      if (typeof window !== 'undefined') {
-        baseURL = '/api/plugins/all-in-one-app/resources';
-      } else {
-        // In Node environment (testing), use direct backend URL
-        baseURL = 'http://localhost:8080';
-      }
+      baseURL = 'http://localhost:8080';
     }
 
     this.baseURL = baseURL;

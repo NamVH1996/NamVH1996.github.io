@@ -65,8 +65,6 @@
     "description": "Unified monitoring and alert management",
     "icon": "bell"
   },
-  "backend": true,
-  "executable": "grafana-all-in-one-plugin-app",
   "includes": [],
   "dependencies": {
     "grafanaVersion": "11.0.0",
