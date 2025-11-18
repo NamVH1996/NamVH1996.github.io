@@ -42,7 +42,7 @@ run: build-dev ## Build and run the plugin backend locally
 	./$(BIN_DIR)/$(BINARY_NAME)
 
 dev: ## Run in development mode with hot reload
-	@command -v air >/dev/null 2>&1 || (echo "Installing air..." && go install github.com/cosmtrek/air@latest)
+	@command -v air >/dev/null 2>&1 || (echo "Installing air..." && go install github.com/cosmtrek/air@v1.43.0)
 	air
 
 test: ## Run tests
