@@ -8,6 +8,7 @@ import (
 
 	"github.com/NamVH1996/grafana-alert-plugin/pkg/models"
 	"github.com/NamVH1996/grafana-alert-plugin/pkg/storage"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 )
@@ -80,7 +81,13 @@ func (h *SwaggerHandler) GrafanaWebhook(w http.ResponseWriter, r *http.Request) 
 
 	count := 0
 	for _, alert := range payload.Alerts {
+		var endsAtPtr *time.Time
+		if !alert.EndsAt.IsZero() {
+			endsAtPtr = &alert.EndsAt
+		}
+
 		alertLog := &models.AlertLog{
+			ID:               uuid.New().String(),
 			AlertName:        alert.Labels["alertname"],
 			Severity:         alert.Labels["severity"],
 			Status:           alert.Status,
@@ -88,7 +95,7 @@ func (h *SwaggerHandler) GrafanaWebhook(w http.ResponseWriter, r *http.Request) 
 			Summary:          alert.Annotations["summary"],
 			Description:      alert.Annotations["description"],
 			StartsAt:         alert.StartsAt,
-			EndsAt:           alert.EndsAt,
+			EndsAt:           endsAtPtr,
 			Fingerprint:      alert.Fingerprint,
 			Labels:           alert.Labels,
 		}
@@ -582,12 +589,6 @@ func getQueryInt(r *http.Request, key string, defaultVal int) int {
 	}
 
 	return intVal
-}
-
-func writeJSON(w http.ResponseWriter, status int, data interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
 }
 
 func writeError(w http.ResponseWriter, status int, message string) {

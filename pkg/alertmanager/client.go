@@ -9,8 +9,17 @@ import (
 
 	"github.com/NamVH1996/grafana-alert-plugin/pkg/models"
 	log "github.com/sirupsen/logrus"
-	amAlert "github.com/prometheus/alertmanager/api/v2/models"
 )
+
+// AlertManagerAlert represents an alert from AlertManager API
+type AlertManagerAlert struct {
+	Status      string            `json:"status"`
+	Fingerprint string            `json:"fingerprint"`
+	Labels      map[string]string `json:"labels"`
+	Annotations map[string]string `json:"annotations"`
+	StartsAt    time.Time         `json:"startsAt"`
+	EndsAt      time.Time         `json:"endsAt"`
+}
 
 // Client is an AlertManager API client
 type Client struct {
@@ -64,7 +73,7 @@ func (c *Client) GetAlerts(filter *models.AlertFilter) (*models.AlertListRespons
 		return nil, fmt.Errorf("AlertManager error: %d", resp.StatusCode)
 	}
 
-	var amAlerts []*amAlert.GettableAlert
+	var amAlerts []*AlertManagerAlert
 	if err := json.NewDecoder(resp.Body).Decode(&amAlerts); err != nil {
 		log.WithError(err).Error("Failed to decode AlertManager response")
 		return nil, err
@@ -89,26 +98,24 @@ func (c *Client) GetAlertStats() (*models.AlertStatsResponse, error) {
 		return nil, err
 	}
 
-	stats := &models.AlertStatsResponse{
-		Total: len(alerts.Alerts),
-	}
+	alertLogs := make(map[string]int)
+	alertLogs["total"] = len(alerts.Alerts)
+	alertLogs["firing"] = 0
+	alertLogs["resolved"] = 0
 
 	for _, alert := range alerts.Alerts {
 		if alert.Status == "firing" {
-			stats.Firing++
+			alertLogs["firing"]++
 		} else if alert.Status == "resolved" {
-			stats.Resolved++
+			alertLogs["resolved"]++
 		}
+	}
 
-		severity := alert.Labels["severity"]
-		switch severity {
-		case "critical":
-			stats.Critical++
-		case "warning":
-			stats.Warning++
-		case "info":
-			stats.Info++
-		}
+	stats := &models.AlertStatsResponse{
+		Status:          "ok",
+		AlertLogs:       alertLogs,
+		ProcessingQueue: make(map[string]int),
+		Timestamp:       time.Now(),
 	}
 
 	return stats, nil
@@ -170,12 +177,12 @@ func (c *Client) Health() (*models.HealthResponse, error) {
 }
 
 // convertAlerts converts AlertManager alerts to our model and applies filtering
-func (c *Client) convertAlerts(amAlerts []*amAlert.GettableAlert, filter *models.AlertFilter) []models.AlertSummary {
+func (c *Client) convertAlerts(amAlerts []*AlertManagerAlert, filter *models.AlertFilter) []models.AlertSummary {
 	var results []models.AlertSummary
 
 	for _, alert := range amAlerts {
 		// Filter by status
-		status := string(alert.Status)
+		status := alert.Status
 		if filter.Status != "" && filter.Status != "all" && status != filter.Status {
 			continue
 		}
@@ -213,7 +220,7 @@ func (c *Client) convertAlerts(amAlerts []*amAlert.GettableAlert, filter *models
 			Summary:     alert.Annotations["summary"],
 			Description: alert.Annotations["description"],
 			Labels:      alert.Labels,
-			StartsAt:    time.Time(*alert.StartsAt),
+			StartsAt:    alert.StartsAt,
 			UpdatedAt:   time.Now(),
 		}
 

@@ -47,16 +47,6 @@ type AlertListResponse struct {
 	Error   string         `json:"error,omitempty"`
 }
 
-// AlertStatsResponse shows alert statistics
-type AlertStatsResponse struct {
-	Total     int `json:"total"`
-	Firing    int `json:"firing"`
-	Resolved  int `json:"resolved"`
-	Critical  int `json:"critical"`
-	Warning   int `json:"warning"`
-	Info      int `json:"info"`
-}
-
 // AlertGroupsResponse shows alerts grouped by label
 type AlertGroupsResponse struct {
 	Groups map[string][]AlertSummary `json:"groups"`
